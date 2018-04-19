@@ -12,6 +12,7 @@ namespace XF.Rotator
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class Main : ContentPage
 	{
+	    public bool SwipeEnabled { get; set; } = false;
 		public Main ()
 		{
 			InitializeComponent ();

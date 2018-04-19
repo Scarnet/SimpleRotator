@@ -20,6 +20,14 @@ namespace XF.Rotator
             typeof(SimpleRotator),
             new List<RotatorView>());
 
+        public static readonly BindableProperty SwipeEnabledProperty = BindableProperty.Create(
+
+            nameof(SwipeEnabled),
+            typeof(bool),
+            typeof(SimpleRotator),
+            true);
+
+
         private const string FirstPageId = "FirstView";
         private Stack<RotatorView> _leftStack;
         private Stack<RotatorView> _rightStack;
@@ -28,19 +36,33 @@ namespace XF.Rotator
         public int CurrentIndex { get; private set; }
         private RotatorNavigator _currentNavigator;
         private List<RotatorNavigator> _navigators;
-        public List<RotatorView> Pages { get; set; }
+
+        private List<RotatorView> _pages;
+        public List<RotatorView> Pages
+        {
+            get => _pages;
+            set
+            {
+                _pages = value;
+                InitPages();
+            } 
+        }
+
+        public bool SwipeEnabled { get; set; }
         private List<RotatorView> _outBoundPages;
         private bool _swipeRun;
+
         public SimpleRotator()
         {
             InitializeComponent();
             _swipeRun = false;
-            Pages = Models.Pages.ThosePages;
-            InitPages();
+            Pages = new List<RotatorView>();
+            //InitPages();
             InitNavigators();
             InitStacks();
         }
 
+        
         private void InitPages()
         {
             var firstPage = Pages[0];
@@ -65,7 +87,7 @@ namespace XF.Rotator
             _leftStack = new Stack<RotatorView>();
             _rightStack = new Stack<RotatorView>();
 
-            _outBoundPages.ForEach(page => _rightStack.Push(page));
+            _outBoundPages?.ForEach(page => _rightStack.Push(page));
         }
 
         private void InitNavigators()
@@ -107,6 +129,9 @@ namespace XF.Rotator
 
         private void PanGestureRecognizer_OnPanUpdated(object sender, PanUpdatedEventArgs e)
         {
+            if(!SwipeEnabled)
+                return;
+
             if (e.StatusType == GestureStatus.Started)
                 _swipeRun = false;
 
