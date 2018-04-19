@@ -31,7 +31,8 @@
                     </RelativeLayout>
                 </Grid>
                 <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-                    <Label Text="⬤" TextColor="Black" />
+                    <Label Text="⬤" TextColor="Black" >
+                    </Label>
                     <Label Text="⬤" TextColor="Gray" />
                     <Label Text="⬤" TextColor="Gray" />
                 </StackLayout>
