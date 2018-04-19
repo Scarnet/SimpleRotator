@@ -13,7 +13,7 @@ namespace XF.Rotator
 		{
 			InitializeComponent();
 
-			MainPage = new XF.Rotator.MainPage();
+			MainPage = new XF.Rotator.Main();
 		}
 
 		protected override void OnStart ()

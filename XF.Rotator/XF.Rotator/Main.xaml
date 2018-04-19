@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:rotator="clr-namespace:XF.Rotator;assembly=XF.Rotator"
+             xmlns:customControl="clr-namespace:XF.Rotator.CustomControl;assembly=XF.Rotator"
+             x:Class="XF.Rotator.Main">
+    <ContentPage.Content>
+        <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+            <rotator:SimpleRotator BackgroundColor="Aqua" HeightRequest="500">
+                <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Black"></customControl:RotatorView>
+                <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Yellow"></customControl:RotatorView>
+                <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="ForestGreen"></customControl:RotatorView>
+            </rotator:SimpleRotator>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
