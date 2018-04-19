@@ -6,10 +6,13 @@
              x:Class="XF.Rotator.Main">
     <ContentPage.Content>
         <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-            <rotator:SimpleRotator BackgroundColor="Aqua" HeightRequest="500">
-                <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Black"></customControl:RotatorView>
-                <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Yellow"></customControl:RotatorView>
-                <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="ForestGreen"></customControl:RotatorView>
+            <rotator:SimpleRotator BackgroundColor="Aqua" HeightRequest="500" SwipeEnabled="{Binding SwipeEnabled}">
+                <rotator:SimpleRotator.Pages>
+                    <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Black"></customControl:RotatorView>
+                    <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Yellow"></customControl:RotatorView>
+                    <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="ForestGreen"></customControl:RotatorView>
+
+                </rotator:SimpleRotator.Pages>
             </rotator:SimpleRotator>
         </StackLayout>
     </ContentPage.Content>
