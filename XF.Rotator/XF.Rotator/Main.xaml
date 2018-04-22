@@ -7,12 +7,10 @@
              x:Name="This">
     <ContentPage.Content>
         <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-            <rotator:SimpleRotator BindingContext="{x:Reference This}" BackgroundColor="Aqua" HeightRequest="500" Pages="{Binding Pages}">
-
-                    <!--<customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Black"></customControl:RotatorView>
-                    <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Yellow"></customControl:RotatorView>
-                    <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="ForestGreen"></customControl:RotatorView>-->
-
+            <rotator:SimpleRotator BindingContext="{x:Reference This}" x:Name="rotator"  BackgroundColor="Aqua" HeightRequest="500" SwipeEnabled="True">
+                <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Black"></customControl:RotatorView>
+                <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Yellow"  ID="Yellow"></customControl:RotatorView>
+                <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="ForestGreen" ID="ForestGreen"></customControl:RotatorView>
             </rotator:SimpleRotator>
         </StackLayout>
     </ContentPage.Content>

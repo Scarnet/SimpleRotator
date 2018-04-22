@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -13,12 +14,15 @@ namespace XF.Rotator
     [ContentProperty("Pages")]
     public partial class SimpleRotator : ContentView
     {
+        delegate Task SwipeAction();
+
+
         public static readonly BindableProperty PagesProperty = BindableProperty.Create(
 
             nameof(Pages),
-            typeof(List<RotatorView>),
+            typeof(ObservableCollection<RotatorView>),
             typeof(SimpleRotator),
-            new List<RotatorView>());
+            new ObservableCollection<RotatorView>());
 
         public static readonly BindableProperty SwipeEnabledProperty = BindableProperty.Create(
 
@@ -32,45 +36,62 @@ namespace XF.Rotator
         private Stack<RotatorView> _leftStack;
         private Stack<RotatorView> _rightStack;
         public RotatorView CurrentPage { get; private set; }
-        
+
         public int CurrentIndex { get; private set; }
         private RotatorNavigator _currentNavigator;
         private List<RotatorNavigator> _navigators;
 
-        private List<RotatorView> _pages;
-        public List<RotatorView> Pages
+        private ObservableCollection<RotatorView> _pages = new ObservableCollection<RotatorView>();
+        public ObservableCollection<RotatorView> Pages
         {
             get => _pages;
             set
             {
-                if(!value.Any())
-                    return;
-
                 _pages = value;
-                InitPages();
-            } 
+            }
         }
 
-        public bool SwipeEnabled { get; set; }
+        public bool SwipeEnabled {get { return (bool)GetValue(SwipeEnabledProperty); } set { SetValue(SwipeEnabledProperty, value); }  }
         private List<RotatorView> _outBoundPages;
         private bool _swipeRun;
 
         public SimpleRotator()
         {
+            //Pages = new List<RotatorView>();
             InitializeComponent();
             _swipeRun = false;
-            Pages = new List<RotatorView>();
-            //InitPages();
-            //InitNavigators();
-            //InitStacks();
+
+            Pages.CollectionChanged += Pages_CollectionChanged;
+
+            //Device.StartTimer(TimeSpan.FromSeconds(0.1), () =>
+            //{
+            //    InitPages();
+            //    InitNavigators();
+            //    InitStacks();
+            //    return false;
+            //});
         }
 
-        
+        private void Pages_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            Init();
+        }
+
+        public void Init()
+        {
+            InitPages();
+            InitNavigators();
+            InitStacks();
+        }
+
         private void InitPages()
         {
             var firstPage = Pages[0];
             firstPage.ID = FirstPageId;
             CurrentPage = firstPage;
+
+            relativeParent.Children.Clear();
+
             relativeParent.Children.Add(firstPage, Constraint.RelativeToParent(parent => parent.X),
                 Constraint.RelativeToParent(parent => parent.Y), Constraint.RelativeToParent(parent => parent.Width),
                 Constraint.RelativeToParent(parent => parent.Height));
@@ -90,6 +111,7 @@ namespace XF.Rotator
             _leftStack = new Stack<RotatorView>();
             _rightStack = new Stack<RotatorView>();
 
+            _outBoundPages.Reverse();
             _outBoundPages?.ForEach(page => _rightStack.Push(page));
         }
 
@@ -112,27 +134,32 @@ namespace XF.Rotator
                 if (navigator.Index == 0)
                     _currentNavigator = navigator;
             }
+
+            NavigationBar.Children.Clear();
+
             _navigators.ForEach(nav => NavigationBar.Children.Add(nav));
         }
 
         private void HandleNavigate(object sender, EventArgs eventArgs)
         {
-            var navigator = (RotatorNavigator) sender;
+            var navigator = (RotatorNavigator)sender;
             int steps = navigator.Index - CurrentIndex;
-            if(steps == 0)
+            if (steps == 0)
                 return;
 
-            Action swipeAction = (steps > 0) ? (Action)SwipeLeft : (Action)SwipeRight;
-            for (int step = 0; step < Math.Abs(steps); step++)
-                swipeAction();
-
+            var swipeAction = (steps > 0) ? (SwipeAction)SwipeLeft : (SwipeAction)SwipeRight;
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                for (int step = 0; step < Math.Abs(steps); step++)
+                    await swipeAction();
+            });
         }
 
 
 
         private void PanGestureRecognizer_OnPanUpdated(object sender, PanUpdatedEventArgs e)
         {
-            if(!SwipeEnabled)
+            if (!SwipeEnabled)
                 return;
 
             if (e.StatusType == GestureStatus.Started)
@@ -146,17 +173,17 @@ namespace XF.Rotator
 
 
             if (e.TotalX > 0)
-                SwipeRight();
+                Device.BeginInvokeOnMainThread(async () => { await SwipeRight(); });
             else if (e.TotalX < 0)
-                SwipeLeft();
+                Device.BeginInvokeOnMainThread(async () => { await SwipeLeft(); });
             _swipeRun = true;
         }
 
         private void UpdateNavStatus(bool rtl)
         {
-            int newIndex = (rtl)? CurrentIndex - 1 : CurrentIndex + 1;
+            int newIndex = (rtl) ? CurrentIndex - 1 : CurrentIndex + 1;
 
-            if(newIndex < 0 || newIndex > _navigators.Count -1)
+            if (newIndex < 0 || newIndex > _navigators.Count - 1)
                 return;
 
             var newNav = _navigators[newIndex];
@@ -167,15 +194,18 @@ namespace XF.Rotator
 
         }
 
-        private void SwipeLeft()
+        private async Task SwipeLeft()
         {
             if (!_rightStack.Any())
                 return;
 
+            Task taskOne = null;
+            Task taskTwo;
+
             if (CurrentPage != null)
             {
                 double movingValue = CurrentPage.ID == FirstPageId ? CurrentPage.Width * -1 : CurrentPage.Width * -2;
-                CurrentPage.TranslateTo(movingValue, 0, 250, Easing.Linear);
+                taskOne = CurrentPage.TranslateTo(movingValue, 0, 250, Easing.Linear);
                 _leftStack.Push(CurrentPage);
             }
 
@@ -183,27 +213,34 @@ namespace XF.Rotator
             var newVisibleView = _rightStack.Pop();
             double newMovingValue = newVisibleView.ID == FirstPageId ? 0 : newVisibleView.Width * -1;
 
-            newVisibleView.TranslateTo(newMovingValue, 0, 250, Easing.Linear);
+            taskTwo = newVisibleView.TranslateTo(newMovingValue, 0, 250, Easing.Linear);
+            await Task.WhenAll(taskOne, taskTwo);
+
             CurrentPage = newVisibleView;
             UpdateNavStatus(rtl: false);
         }
 
-        private void SwipeRight()
+        private async Task SwipeRight()
         {
             if (!_leftStack.Any())
                 return;
 
+            Task taskOne = null;
+            Task taskTwo;
+
             if (CurrentPage != null)
             {
                 double movingValue = CurrentPage.ID == FirstPageId ? CurrentPage.Width * 1 : 0;
-                CurrentPage.TranslateTo(movingValue, 0, 250, Easing.Linear);
+                taskOne = CurrentPage.TranslateTo(movingValue, 0, 250, Easing.Linear);
                 _rightStack.Push(CurrentPage);
             }
 
 
             var newVisibleView = _leftStack.Pop();
             double newMovingValue = newVisibleView.ID == FirstPageId ? 0 : newVisibleView.Width * -1;
-            newVisibleView.TranslateTo(newMovingValue, 0, 250, Easing.Linear);
+            taskTwo = newVisibleView.TranslateTo(newMovingValue, 0, 250, Easing.Linear);
+            await Task.WhenAll(taskOne, taskTwo);
+
             CurrentPage = newVisibleView;
             UpdateNavStatus(rtl: true);
         }
