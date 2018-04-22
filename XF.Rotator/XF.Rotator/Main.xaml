@@ -3,16 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:rotator="clr-namespace:XF.Rotator;assembly=XF.Rotator"
              xmlns:customControl="clr-namespace:XF.Rotator.CustomControl;assembly=XF.Rotator"
-             x:Class="XF.Rotator.Main">
+             x:Class="XF.Rotator.Main"
+             x:Name="This">
     <ContentPage.Content>
         <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-            <rotator:SimpleRotator BackgroundColor="Aqua" HeightRequest="500" SwipeEnabled="{Binding SwipeEnabled}">
-                <rotator:SimpleRotator.Pages>
-                    <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Black"></customControl:RotatorView>
-                    <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Yellow"></customControl:RotatorView>
-                    <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="ForestGreen"></customControl:RotatorView>
+            <rotator:SimpleRotator BindingContext="{x:Reference This}" BackgroundColor="Aqua" HeightRequest="500" Pages="{Binding Pages}">
 
-                </rotator:SimpleRotator.Pages>
+                    <!--<customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Black"></customControl:RotatorView>
+                    <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Yellow"></customControl:RotatorView>
+                    <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="ForestGreen"></customControl:RotatorView>-->
+
             </rotator:SimpleRotator>
         </StackLayout>
     </ContentPage.Content>

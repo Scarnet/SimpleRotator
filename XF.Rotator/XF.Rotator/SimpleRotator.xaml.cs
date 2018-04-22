@@ -43,6 +43,9 @@ namespace XF.Rotator
             get => _pages;
             set
             {
+                if(!value.Any())
+                    return;
+
                 _pages = value;
                 InitPages();
             } 
@@ -58,8 +61,8 @@ namespace XF.Rotator
             _swipeRun = false;
             Pages = new List<RotatorView>();
             //InitPages();
-            InitNavigators();
-            InitStacks();
+            //InitNavigators();
+            //InitStacks();
         }
 
         
