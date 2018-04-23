@@ -9,7 +9,7 @@ namespace XF.Rotator.CustomControl
     {
         public RotatorView()
         {
-
+           
         }
 
         public RotatorView(ContentView view)

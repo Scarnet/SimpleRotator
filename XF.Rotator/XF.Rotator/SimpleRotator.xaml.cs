@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -38,6 +39,10 @@ namespace XF.Rotator
         public RotatorView CurrentPage { get; private set; }
 
         public int CurrentIndex { get; private set; }
+
+        public event EventHandler SwipeCompleted;
+        public event EventHandler SwipeStarted;
+
         private RotatorNavigator _currentNavigator;
         private List<RotatorNavigator> _navigators;
 
@@ -51,7 +56,7 @@ namespace XF.Rotator
             }
         }
 
-        public bool SwipeEnabled {get { return (bool)GetValue(SwipeEnabledProperty); } set { SetValue(SwipeEnabledProperty, value); }  }
+        public bool SwipeEnabled { get { return (bool)GetValue(SwipeEnabledProperty); } set { SetValue(SwipeEnabledProperty, value); } }
         private List<RotatorView> _outBoundPages;
         private bool _swipeRun;
 
@@ -88,8 +93,11 @@ namespace XF.Rotator
         {
             var firstPage = Pages[0];
             firstPage.ID = FirstPageId;
+            var parentPanGestureRecognizer = new PanGestureRecognizer();
+            parentPanGestureRecognizer.PanUpdated += PanGestureRecognizer_OnPanUpdated;
+            firstPage.GestureRecognizers.Add(parentPanGestureRecognizer);
             CurrentPage = firstPage;
-
+           
             relativeParent.Children.Clear();
 
             relativeParent.Children.Add(firstPage, Constraint.RelativeToParent(parent => parent.X),
@@ -99,6 +107,10 @@ namespace XF.Rotator
             _outBoundPages = Pages.Where(page => page.ID != FirstPageId).ToList();
             _outBoundPages.ForEach(page =>
             {
+                var panGestureRecognizer = new PanGestureRecognizer();
+                panGestureRecognizer.PanUpdated += PanGestureRecognizer_OnPanUpdated;
+                page.GestureRecognizers.Add(panGestureRecognizer);
+                page.IsVisible = false;
                 relativeParent.Children.Add(page, Constraint.RelativeToParent(parent => parent.Width),
                     Constraint.RelativeToParent(parent => parent.Y),
                     Constraint.RelativeToParent(parent => parent.Width),
@@ -191,13 +203,16 @@ namespace XF.Rotator
             newNav.IsActive = true;
             _currentNavigator.IsActive = false;
             _currentNavigator = newNav;
-
         }
 
-        private async Task SwipeLeft()
+        public async Task SwipeLeft()
         {
             if (!_rightStack.Any())
                 return;
+
+            SwipeStarted?.Invoke(this, EventArgs.Empty);
+            var newVisibleView = _rightStack.Pop();
+            newVisibleView.IsVisible = true;
 
             Task taskOne = null;
             Task taskTwo;
@@ -210,21 +225,27 @@ namespace XF.Rotator
             }
 
 
-            var newVisibleView = _rightStack.Pop();
             double newMovingValue = newVisibleView.ID == FirstPageId ? 0 : newVisibleView.Width * -1;
 
             taskTwo = newVisibleView.TranslateTo(newMovingValue, 0, 250, Easing.Linear);
             await Task.WhenAll(taskOne, taskTwo);
 
+            if (CurrentPage != null)
+                CurrentPage.IsVisible = false;
+
             CurrentPage = newVisibleView;
             UpdateNavStatus(rtl: false);
+            SwipeCompleted?.Invoke(this, EventArgs.Empty);
         }
 
-        private async Task SwipeRight()
+        public async Task SwipeRight()
         {
             if (!_leftStack.Any())
                 return;
 
+            SwipeStarted?.Invoke(this, EventArgs.Empty);
+            var newVisibleView = _leftStack.Pop();
+            newVisibleView.IsVisible = true;
             Task taskOne = null;
             Task taskTwo;
 
@@ -236,13 +257,16 @@ namespace XF.Rotator
             }
 
 
-            var newVisibleView = _leftStack.Pop();
             double newMovingValue = newVisibleView.ID == FirstPageId ? 0 : newVisibleView.Width * -1;
             taskTwo = newVisibleView.TranslateTo(newMovingValue, 0, 250, Easing.Linear);
             await Task.WhenAll(taskOne, taskTwo);
 
+            if (CurrentPage != null)
+                CurrentPage.IsVisible = false;
+
             CurrentPage = newVisibleView;
             UpdateNavStatus(rtl: true);
+            SwipeCompleted?.Invoke(this, EventArgs.Empty);
         }
     }
 }

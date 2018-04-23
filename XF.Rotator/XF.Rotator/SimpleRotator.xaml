@@ -7,6 +7,9 @@
     <ContentView.Content>
         <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
             <Grid  x:Name="SubViewsContainer" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+                <Grid.GestureRecognizers>
+                    <PanGestureRecognizer PanUpdated="PanGestureRecognizer_OnPanUpdated" />
+                </Grid.GestureRecognizers>
                 <RelativeLayout x:Name="relativeParent">
                     <RelativeLayout.GestureRecognizers>
                         <PanGestureRecognizer PanUpdated="PanGestureRecognizer_OnPanUpdated" />

@@ -24,5 +24,38 @@ namespace XF.Rotator
 
             //rotator.Init();
         }
-    }
+
+	    private void Button_OnClicked(object sender, EventArgs e)
+	    {
+	        
+	    }
+
+	    private void Button_OnClicked1(object sender, EventArgs e)
+	    {
+	        
+
+	    }
+
+	    private void Button_OnClicked2(object sender, EventArgs e)
+	    {
+	        
+	    }
+
+
+	    private void TapGestureRecognizer_OnTapped(object sender, EventArgs e)
+	    {
+	        
+	    }
+
+	    private void TapGestureRecognizer_OnTapped1(object sender, EventArgs e)
+	    {
+	        
+	    }
+
+	    private void TapGestureRecognizer_OnTapped2(object sender, EventArgs e)
+	    {
+	        
+	    }
+	}
+
 }
