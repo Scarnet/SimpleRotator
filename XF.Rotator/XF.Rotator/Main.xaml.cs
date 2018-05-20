@@ -23,9 +23,18 @@ namespace XF.Rotator
             base.OnAppearing();
 
             //rotator.Init();
+            try
+            {
+                rt.Pages.Clear();
+            }
+            catch (Exception exception)
+            {
+
+            }
+
         }
 
-	    private void Button_OnClicked(object sender, EventArgs e)
+        private void Button_OnClicked(object sender, EventArgs e)
 	    {
 	        
 	    }

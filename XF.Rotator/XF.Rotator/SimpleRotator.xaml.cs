@@ -84,6 +84,9 @@ namespace XF.Rotator
 
         public void Init()
         {
+            if (Pages == null || !Pages.Any())
+                return;
+
             InitPages();
             InitNavigators();
             InitStacks();
@@ -91,6 +94,7 @@ namespace XF.Rotator
 
         private void InitPages()
         {
+
             var firstPage = Pages[0];
             firstPage.ID = FirstPageId;
             var parentPanGestureRecognizer = new PanGestureRecognizer();
@@ -207,7 +211,7 @@ namespace XF.Rotator
 
         public async Task SwipeLeft()
         {
-            if (!_rightStack.Any())
+            if (_rightStack == null || !_rightStack.Any())
                 return;
 
             SwipeStarted?.Invoke(this, EventArgs.Empty);
@@ -240,7 +244,7 @@ namespace XF.Rotator
 
         public async Task SwipeRight()
         {
-            if (!_leftStack.Any())
+            if (_leftStack == null || !_leftStack.Any())
                 return;
 
             SwipeStarted?.Invoke(this, EventArgs.Empty);

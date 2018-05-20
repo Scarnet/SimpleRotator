@@ -7,18 +7,8 @@
              x:Name="This">
     <ContentPage.Content>
         <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-            <rotator:SimpleRotator BindingContext="{x:Reference This}" x:Name="rotator"  BackgroundColor="Aqua" HeightRequest="500">
-                <customControl:RotatorView VerticalOptions="FillAndExpand"  BackgroundColor="Black">
+            <rotator:SimpleRotator BindingContext="{x:Reference This}" x:Name="rt"  BackgroundColor="Aqua" HeightRequest="500">
 
-                </customControl:RotatorView>
-                <customControl:RotatorView  BackgroundColor="Yellow"  ID="Yellow">
-<StackLayout>
-    <Entry></Entry>
-</StackLayout>
-                </customControl:RotatorView>
-                <customControl:RotatorView HeightRequest="100" VerticalOptions="FillAndExpand"  BackgroundColor="ForestGreen" ID="ForestGreen">
-
-                </customControl:RotatorView>
             </rotator:SimpleRotator>
         </StackLayout>
     </ContentPage.Content>
