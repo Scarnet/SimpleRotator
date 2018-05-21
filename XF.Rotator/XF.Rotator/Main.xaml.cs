@@ -32,6 +32,11 @@ namespace XF.Rotator
                 {
                     BackgroundColor = Color.Blue
                 });
+                rt.Pages.Add(new RotatorView()
+                {
+                    BackgroundColor = Color.Bisque
+                });
+
             }
             catch (Exception exception)
             {

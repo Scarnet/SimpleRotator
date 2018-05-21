@@ -22,13 +22,15 @@ namespace XF.Rotator.CustomControl
         }
 
         public int Index { get; set; }
-        
+
         public RotatorNavigator(Color activeColor, Color inActiveColor)
         {
             ActiveColor = activeColor;
             InActiveColor = inActiveColor;
             Text = "⬤";
             FontSize = Device.GetNamedSize(NamedSize.Large, GetType());
+            VerticalOptions = LayoutOptions.Fill;
+            HorizontalOptions = LayoutOptions.Center;
         }
 
         public RotatorNavigator()
@@ -37,6 +39,8 @@ namespace XF.Rotator.CustomControl
             InActiveColor = Color.Gray;
             Text = "⬤";
             FontSize = Device.GetNamedSize(NamedSize.Large, GetType());
+            HorizontalOptions = LayoutOptions.Center;
+            VerticalOptions = LayoutOptions.Fill;
         }
     }
 }
