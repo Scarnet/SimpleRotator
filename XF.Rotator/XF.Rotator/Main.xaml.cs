@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using XF.Rotator.CustomControl;
 
 namespace XF.Rotator
 {
@@ -23,9 +24,14 @@ namespace XF.Rotator
             base.OnAppearing();
 
             //rotator.Init();
+            
             try
             {
                 rt.Pages.Clear();
+                rt.Pages.Add(new RotatorView()
+                {
+                    BackgroundColor = Color.Blue
+                });
             }
             catch (Exception exception)
             {
